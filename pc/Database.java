@@ -55,6 +55,7 @@ public class Database {
 					"ecg INTEGER, " + 
 					"po_IR INTEGER, " + 
 					"po_Red INTEGER, " + 
+					"elapsedMillis BIGINT, " + 
 					"timestamp TIMESTAMP " + 
 				" );")
 				.execute();
@@ -63,15 +64,16 @@ public class Database {
 		con.prepareStatement("SET FILES WRITE DELAY FALSE;").execute();
 	}
 	
-	public void store(int ecg, int po_IR, int po_Red) {
+	public void store(int ecg, int po_IR, int po_Red, long elapsedMillis) {
 		PreparedStatement pstm = null;
 		try {
 			pstm = con.prepareStatement(
-				"INSERT INTO " + tableName + " (ecg, po_IR, po_Red, timestamp) "+
-				"VALUES (?, ?, ?, CURRENT_TIMESTAMP);");
+				"INSERT INTO " + tableName + " (ecg, po_IR, po_Red, elapsedMillis, timestamp) "+
+				"VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP);");
 			pstm.setInt( 1, ecg);
 			pstm.setInt( 2, po_IR);
 			pstm.setInt( 3, po_Red);
+			pstm.setLong( 4, elapsedMillis);
 			int count = pstm.executeUpdate();
 			pstm.close();
 		} catch (SQLException e) {
@@ -87,9 +89,10 @@ public class Database {
 			ResultSet rs = stm.executeQuery(sql);
 			while(rs.next()){
 				System.out.print("\tid: " + rs.getInt("id"));
-				System.out.print(",   \tecg: " + rs.getInt("ecg"));
+				System.out.print(",\tecg: " + rs.getInt("ecg"));
 				System.out.print(",\tpo_IR: " + rs.getInt("po_IR"));
 				System.out.print(",\tpo_Red: " + rs.getInt("po_Red"));
+				System.out.print(",\telapsedMillis: " + rs.getLong("elapsedMillis"));
 				System.out.print(",\ttimestamp: " + rs.getTimestamp("timestamp"));
 				System.out.println();
 			}
@@ -124,7 +127,7 @@ public class Database {
 			// db.store( rand.nextInt(50000), rand.nextInt(50000), rand.nextInt(50000));
 			// db.store( rand.nextInt(50000), rand.nextInt(50000), rand.nextInt(50000));
 			// db.store( rand.nextInt(50000), rand.nextInt(50000), rand.nextInt(50000));
-			db.printAll();
+			//db.printAll();
 			db.printCount();
 		} catch (Exception e) {
 			e.printStackTrace();

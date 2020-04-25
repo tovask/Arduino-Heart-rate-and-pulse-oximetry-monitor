@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public class PC {
 	
 	private Database db = null;
+	private Graph graph = null;
 	
 	private InetAddress getArduinoAddress(){
 		
@@ -95,13 +96,15 @@ public class PC {
 				System.out.println("Received from Arduino: " + line);
 				
 				// Create a Pattern object, create matcher object.
-				Matcher m = Pattern.compile("ecg: ([-]?\\d+), po_IR: (\\d+), po_Red: (\\d+)").matcher(line);
+				Matcher m = Pattern.compile("ecg: ([-]?\\d+), po_IR: ([-]?\\d+), po_Red: ([-]?\\d+), elapsedMillis: (\\d+)").matcher(line);
 				if (m.find()) {
 					int ecg = Integer.parseInt(m.group(1));
 					int po_IR = Integer.parseInt(m.group(2));
 					int po_Red = Integer.parseInt(m.group(3));
-					System.out.println("Parsed data: ecg: " + ecg + ", po_IR: " + po_IR + ", po_Red: " + po_Red );
-					db.store( ecg, po_IR, po_Red);
+					long elapsedMillis = Long.parseLong(m.group(4));
+					System.out.println("Parsed data: ecg: " + ecg + ", po_IR: " + po_IR + ", po_Red: " + po_Red + ", elapsedMillis: " + elapsedMillis);
+					db.store( ecg, po_IR, po_Red, elapsedMillis);
+					graph.newData( ecg, po_IR, po_Red, elapsedMillis);
 				}else {
 					System.out.println("Invalid data format!");
 				}
@@ -129,6 +132,7 @@ public class PC {
 			e.printStackTrace();
 			return;
 		}
+		graph = new Graph();
 		while (true) {
 			InetAddress arduinoIP = getArduinoAddress();
 			receiveData(arduinoIP);

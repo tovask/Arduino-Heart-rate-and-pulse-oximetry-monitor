@@ -40,9 +40,10 @@ void loop() {
     // delay(10000);
     String msg;
     do {
-      delay(100);
-      msg = String("ecg: ") + ecg.getValue() + ", po_IR: " + po.getIRValue() + ", po_Red: " + po.getRedValue() + "\n";
-      // msg = String("ecg: ") + random(100000) + ", po_IR: " + random(100000) + ", po_Red: " + random(100000) + "\n";
+      delay( 1000 / MAX_FREQUENCY );
+      msg = String("ecg: ") + ecg.getValue() + ", po_IR: " + po.getIRValue() + ", po_Red: " + po.getRedValue() + ", elapsedMillis: " + millis() + "\n";
+      //msg = String("ecg: ") + (int)(100*sin(millis()/1000.0)) + ", po_IR: " + (int)(100*cos(millis()/1000.0)) + ", po_Red: " + (int)(100*tan(millis()/1000.0)) + ", elapsedMillis: " + millis() + "\n";
+      // msg = String("ecg: ") + random(100000) + ", po_IR: " + random(100000) + ", po_Red: " + random(100000) + ", elapsedMillis: " + random(100000) + "\n";
     } while ( tcp.send(msg) );
   }
   delay(1000);
